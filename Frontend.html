@@ -1,82 +1,409 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, intial-scale=1.0">
-    <title>My Online Portfolio</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Frontend Design — Brandon Davis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0a0c0f;
+      --surface:  #111418;
+      --border:   #1e2328;
+      --accent:   #00d4aa;
+      --accent2:  #0099ff;
+      --text:     #e8eaed;
+      --muted:    #6b7280;
+      --font-head: 'Syne', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.35;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 3rem;
+      background: rgba(10,12,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+    /* PAGE HEADER */
+    .page-header {
+      padding: 9rem 3rem 4rem;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .page-header-glow {
+      position: absolute;
+      bottom: -100px; right: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(0,212,170,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .page-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .page-eyebrow::before { content: '// '; opacity: 0.5; }
+    .page-title {
+      font-family: var(--font-head);
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+    .page-subtitle {
+      color: var(--muted);
+      font-size: 0.85rem;
+      max-width: 500px;
+      line-height: 1.8;
+    }
+
+    /* DEMO GRID */
+    .demos-section {
+      padding: 5rem 3rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+    .section-num { font-size: 0.65rem; letter-spacing: 0.15em; color: var(--accent); }
+    .section-title {
+      font-family: var(--font-head);
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .section-line { flex: 1; height: 1px; background: var(--border); }
+
+    /* DEMO CARDS */
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .demo-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .demo-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(0,212,170,0.3);
+    }
+
+    .demo-preview {
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      font-family: var(--font-head);
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    /* Individual demo preview styles */
+    .preview-1 {
+      background: linear-gradient(135deg, #0a0c0f 0%, #0f1a2e 100%);
+      color: #00d4aa;
+    }
+    .preview-1::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 30px,
+        rgba(0,212,170,0.04) 30px,
+        rgba(0,212,170,0.04) 31px
+      );
+    }
+
+    .preview-2 {
+      background: #0f0f0f;
+      color: #fff;
+    }
+    .preview-2::after {
+      content: '';
+      position: absolute;
+      width: 150px; height: 150px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,100,50,0.3), transparent 70%);
+      top: -30px; right: -30px;
+    }
+
+    .preview-3 {
+      background: linear-gradient(180deg, #111 0%, #1a1a2e 100%);
+    }
+    .preview-3 .preview-text {
+      background: linear-gradient(90deg, #00d4aa, #0099ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .preview-4 {
+      background: #0d0d0d;
+      color: #f0f0f0;
+    }
+    .preview-4::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .demo-info {
+      padding: 1.25rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .demo-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+    .demo-name {
+      font-family: var(--font-head);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    .demo-tech {
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    /* CTA SECTION */
+    .cta-section {
+      border-top: 1px solid var(--border);
+      padding: 5rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .cta-text h3 {
+      font-family: var(--font-head);
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .cta-text p {
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.75;
+      max-width: 420px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.75rem;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      font-weight: 500;
+      border: 1px solid var(--accent);
+    }
+    .btn-primary:hover { background: transparent; color: var(--accent); }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .page-header, .demos-section, .cta-section { padding-left: 1.5rem; padding-right: 1.5rem; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+      .cta-section { flex-direction: column; }
+    }
+  </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar__container">
-            <a href="/" id="navbar__logo"> <i class="fas fa-house"></i>
-            Portfolio</a>
-            <div class="navbar__toggle" id="mobile-menu">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
-            <ul class="navbar__menu">
-                <li class="navbar__item">
-                    <a href="home.html" class="navbar__links">
-                        Home
-                    </a>
-                </li>
-                <li class="navbar__item">
-                    <a href="aboutme.html" class="navbar__links">
-                        About Me
-                    </a>
-                </li>
-                <li class="navbar__item">
-                    <a href="Frontend.html" class="navbar__links">
-                        Frontend Design
-                    </a>
-                </li>
-            </ul>
+
+  <nav>
+    <a class="nav-logo" href="index.html">BD<span>.</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="aboutme.html">About</a></li>
+      <li><a href="Frontend.html" class="active">Design</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-header-glow"></div>
+    <p class="page-eyebrow">Frontend Work</p>
+    <h1 class="page-title">Design &<br>Interface</h1>
+    <p class="page-subtitle">
+      UI work, layout experiments, and frontend components built with HTML, CSS, and JavaScript.
+    </p>
+  </div>
+
+  <div class="demos-section">
+    <div class="section-header reveal">
+      <span class="section-num">01</span>
+      <h2 class="section-title">UI Components</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="demo-grid">
+
+      <div class="demo-card reveal">
+        <div class="demo-preview preview-1">
+          <span style="position:relative; z-index:1;">Dashboard</span>
         </div>
-    </nav>
-
-
-        <!-- Projects Section-->
-        <div class="frontprojects">
-            <h1>Here are some of my personal Frontend Design projects:</h1>
-            <div class="frontproject__container">
-                <div class="frontproject__content">
-                    <h2>Tidy Tribe</h2>
-                    <p>
-                        Technical Specs: This website was created using HTML, CSS, and JavaScript. The website is responsive and has features in place to help the user navigate the site with ease. This website has been published using Github Pages. <br>
-                    <br> Purpose of the Project: The purpose of the project was to design a mock website that presented itself as a cleaning/organizational business. Originally this was to be a proof of concept for a site that I would eventually build for a family member should they wish to open their own business.
-                    </p>
-                    <button class="frontproject__btn"><a href="https://davis013.github.io/tidytribe/">Link to Site</a></button>
-                </div>
-                
-                <div class="frontproject__content">
-                    <h2>The Movement</h2>
-                    <p>Technical Specs: This website was created using HTML, CSS, and JavaScript. The website is reponsive and has features in place to help the user navigate the site with ease. This website has been published using GitHub Pages. <br>
-                    <br>Purpose of the project: The purpose of the project was to create a mock website that motivates/empowers others to help normalize that it's okay to get help for mental health issues regardless of what's wrong. </p> <br> <br>
-                    <button class="frontproject__btn"><a href="https://davis013.github.io/themovement/">Link to Site</a></button>
-                </div>
-            </div>
+        <div class="demo-info">
+          <div class="demo-label">Component</div>
+          <div class="demo-name">Data Dashboard Layout</div>
+          <div class="demo-tech">HTML · CSS Grid · JS</div>
         </div>
+      </div>
 
-    <!--Footer Section-->
-        <div class="footer__container">
-            <div class="footer__links">
-                <div class="footer__link--wrapper">
-                    <div class="footer__link--items">
-                        <h2>About Me</h2>
-                        <a href="aboutme.html"> More About Me</a>
-                    </div>
-                    <div class="footer__link--items">
-                        <h2>Social Media</h2>
-                        <a href="https://www.linkedin.com/in/brandon-davis-1b9820285/"> LinkedIn</a>
-                        <a href="https://github.com/Davis013?tab=repositories"> GitHub</a>
-                    </div>
-                </div>
-            </div>
+      <div class="demo-card reveal">
+        <div class="demo-preview preview-2">
+          <span style="position:relative; z-index:1;">Card UI</span>
         </div>
+        <div class="demo-info">
+          <div class="demo-label">Component</div>
+          <div class="demo-name">Interactive Card System</div>
+          <div class="demo-tech">HTML · CSS · JavaScript</div>
+        </div>
+      </div>
 
+      <div class="demo-card reveal">
+        <div class="demo-preview preview-3">
+          <span class="preview-text" style="position:relative; z-index:1;">Typography</span>
+        </div>
+        <div class="demo-info">
+          <div class="demo-label">Design</div>
+          <div class="demo-name">Type & Color Systems</div>
+          <div class="demo-tech">CSS Variables · Google Fonts</div>
+        </div>
+      </div>
 
-<script src="app.js"></script>
+      <div class="demo-card reveal">
+        <div class="demo-preview preview-4">
+          <span style="position:relative; z-index:1;">Portfolio</span>
+        </div>
+        <div class="demo-info">
+          <div class="demo-label">Full Site</div>
+          <div class="demo-name">This Portfolio</div>
+          <div class="demo-tech">HTML · CSS · Vanilla JS</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="cta-section reveal">
+    <div class="cta-text">
+      <h3>Want to work together?</h3>
+      <p>I'm always open to discussing new opportunities, interesting projects, or just chatting about tech and development.</p>
+    </div>
+    <a href="aboutme.html" class="btn btn-primary">Get In Touch</a>
+  </div>
+
+  <footer>
+    <span>© 2025 Brandon Davis</span>
+    <a href="index.html" style="color:var(--accent); text-decoration:none; font-size:0.7rem;">← Back to Portfolio</a>
+  </footer>
+
+  <script>
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    revealEls.forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>

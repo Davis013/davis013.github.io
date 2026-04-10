@@ -487,7 +487,7 @@
           authentication, SQLAlchemy ORM, full CRUD endpoints, filtering, pagination, a
           live stats endpoint, and a responsive frontend dashboard that consumes the API.
         </p>
-        <a href="https://github.com/Davis013/Task-api" target="_blank" class="project-link">View on GitHub</a>
+        <a href="https://github.com/Davis013/task-api" target="_blank" class="project-link">View on GitHub</a>
       </div>
 
     </div>
@@ -531,6 +531,17 @@
     <span>Built with HTML · CSS · JS</span>
   </footer>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-    // Scroll reveal
-    const revealEls = document.querySele
+  <script>
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.05 });
+    revealEls.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

@@ -1,95 +1,441 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, intial-scale=1.0">
-    <title>My Online Portfolio</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About — Brandon Davis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0a0c0f;
+      --surface:  #111418;
+      --border:   #1e2328;
+      --accent:   #00d4aa;
+      --accent2:  #0099ff;
+      --text:     #e8eaed;
+      --muted:    #6b7280;
+      --font-head: 'Syne', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.35;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 3rem;
+      background: rgba(10,12,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+    /* PAGE HEADER */
+    .page-header {
+      padding: 9rem 3rem 4rem;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .page-header-glow {
+      position: absolute;
+      top: -100px; left: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(0,153,255,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .page-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 1rem;
+    }
+    .page-eyebrow::before { content: '// '; opacity: 0.5; }
+    .page-title {
+      font-family: var(--font-head);
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    /* CONTENT */
+    .content-wrap {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .content-main {
+      padding: 4rem 3rem;
+      border-right: 1px solid var(--border);
+    }
+
+    .bio-block {
+      margin-bottom: 3rem;
+    }
+    .bio-block h3 {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+    }
+    .bio-block p {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.9;
+    }
+
+    .edu-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--accent);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .edu-degree {
+      font-family: var(--font-head);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    .edu-school {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* SIDEBAR */
+    .content-sidebar {
+      padding: 4rem 2rem;
+    }
+
+    .sidebar-section {
+      margin-bottom: 2.5rem;
+    }
+    .sidebar-section h4 {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .skill-group {
+      margin-bottom: 1.25rem;
+    }
+    .skill-group-label {
+      font-size: 0.7rem;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+    .skill-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .skill-pill {
+      font-size: 0.65rem;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      background: rgba(0,212,170,0.08);
+      border: 1px solid rgba(0,212,170,0.2);
+      padding: 0.25rem 0.6rem;
+      border-radius: 2px;
+    }
+    .skill-pill.blue {
+      color: var(--accent2);
+      background: rgba(0,153,255,0.08);
+      border-color: rgba(0,153,255,0.2);
+    }
+    .skill-pill.neutral {
+      color: var(--muted);
+      background: rgba(107,114,128,0.1);
+      border-color: var(--border);
+    }
+
+    /* CONTACT */
+    .contact-section {
+      padding: 4rem 3rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .section-num { font-size: 0.65rem; letter-spacing: 0.15em; color: var(--accent); }
+    .section-title {
+      font-family: var(--font-head);
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .section-line { flex: 1; height: 1px; background: var(--border); }
+
+    .contact-methods {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border: 1.5px solid var(--border);
+      max-width: 640px;
+    }
+    .contact-row {
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      transition: background 0.2s;
+    }
+    .contact-row:hover { background: #161b21; }
+    .contact-row-left { display: flex; flex-direction: column; gap: 0.2rem; }
+    .contact-row-label { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .contact-row-value { font-family: var(--font-head); font-size: 0.95rem; font-weight: 600; }
+    .contact-row a {
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .contact-row a:hover { opacity: 0.7; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 900px) {
+      .content-wrap { grid-template-columns: 1fr; }
+      .content-main { border-right: none; border-bottom: 1px solid var(--border); }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .page-header, .content-main, .content-sidebar, .contact-section { padding-left: 1.5rem; padding-right: 1.5rem; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    }
+  </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar__container">
-            <a href="/" id="navbar__logo"> <i class="fas fa-house"></i>
-            Portfolio</a>
-            <div class="navbar__toggle" id="mobile-menu">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
-            <ul class="navbar__menu">
-                <li class="navbar__item">
-                    <a href="home.html" class="navbar__links">
-                        Home
-                    </a>
-                </li>
-                <li class="navbar__item">
-                    <a href="aboutme.html" class="navbar__links">
-                        About Me
-                    </a>
-                </li>
-                <li class="navbar__item">
-                    <a href="Frontend.html" class="navbar__links">
-                        Frontend Design
-                    </a>
-                </li>
-            </ul>
+
+  <nav>
+    <a class="nav-logo" href="index.html">BD<span>.</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="aboutme.html" class="active">About</a></li>
+      <li><a href="Frontend.html">Design</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-header-glow"></div>
+    <p class="page-eyebrow">Who I Am</p>
+    <h1 class="page-title">About Me</h1>
+  </div>
+
+  <div class="content-wrap">
+    <div class="content-main">
+
+      <div class="bio-block reveal">
+        <h3>Background</h3>
+        <p>
+          I'm Brandon Davis, a Software Developer based in the Midwest with a Bachelor's degree in Computer Science
+          from Western Governors University. I have a strong foundation across the full development stack — from
+          designing database-driven desktop applications to building Android mobile apps and scripting automation tools.
+        </p>
+      </div>
+
+      <div class="bio-block reveal">
+        <h3>Work Ethic</h3>
+        <p>
+          People have called me a workaholic — I'd say I just hate leaving things half-finished. I like keeping my mind
+          sharp, solving real problems, and building things that actually work well. Whether it's optimizing a SQL query
+          or structuring clean application logic, I care about doing it right.
+        </p>
+      </div>
+
+      <div class="bio-block reveal">
+        <h3>Outside the Code</h3>
+        <p>
+          When I'm not building things, I'm staying mentally engaged through RTS and strategy games — Dota 2, StarCraft,
+          Rainbow Six Siege. I also enjoy cooking, BBQing, and spending time with my wife and our dog Radar.
+        </p>
+      </div>
+
+      <div class="reveal">
+        <h3 style="font-family: var(--font-head); font-size:1rem; font-weight:700; color:var(--accent); margin-bottom:1rem; letter-spacing:0.05em;">Education</h3>
+        <div class="edu-card">
+          <div class="edu-degree">B.S. Computer Science</div>
+          <div class="edu-school">Western Governors University</div>
         </div>
-    </nav>
+      </div>
 
-
-    <!--Home Text Section-->
-
-    <div class="Aboutme">
-        <div class="Aboutme__container">
-            <div class="Aboutme__content">
-                <h1>A little about me:</h1>
-                <p>My name is Brandon Davis, a Software Developer out of the Midwest. I enjoy playing RTS, FPS, and Strategy games. Whether that is Dota 2, Rainbow Six Siege, or something like StarCraft I enjoy keeping my mind stimulated. I also enjoy cooking, BBQing, spending time with my wife and my fur child Radar, as well as watching scary movies. People in the past have called my a work-a-holic, I prefer to keep myself busy and make the most effective use of my time. If you have any questions please feel free to reach out to me!</p>
-            </div>
-            <div class="main__img--container">
-                <img src="images/Radar.JPG" alt="pic" id="main__img">
-            </div>
-        </div>
     </div>
 
+    <div class="content-sidebar">
 
-        <!-- Contact Me-->
-        <div class="contactme">
-            <h1>Here's how to contact me:</h1>
-            <div class="contactme__container">
-                <div class="contactme__content">
-                    <h2>LinkedIn</h2>
-                    <p>You can send me a direct message to my LinkedIn Account by clicking the button below:
-                    </p>
-                    <button class="contactme__btn"><a href="https://www.linkedin.com/messaging/thread/new?recipient=brandondavis1b9820285&topic=Portfolio%20Inquiry" target="_blank">LinkedIn message</a></button>
-                </div>
-                <div class="contactme__content">
-                    <h2>Email</h2>
-                    <p>You can send me an email by clicking the button down below: </p><br>
-                    <button class="contactme__btn"> <a href="mailto:brandondavis013@gmail.com?subject=Portfolio Inquiry&body=Hello,%0D%0A%0D%0AI'm getting in touch after visiting your portfolio."> Email Me</a></button>
-                </div>
-            </div>
+      <div class="sidebar-section reveal">
+        <h4>Languages</h4>
+        <div class="skill-pills">
+          <span class="skill-pill">Java</span>
+          <span class="skill-pill">Python</span>
+          <span class="skill-pill">C++</span>
+          <span class="skill-pill">HTML</span>
+          <span class="skill-pill">CSS</span>
+          <span class="skill-pill">JavaScript</span>
         </div>
+      </div>
 
-
-
-    <!--Footer Section-->
-        <div class="footer__container">
-            <div class="footer__links">
-                <div class="footer__link--wrapper">
-                    <div class="footer__link--items">
-                        <h2>About Me</h2>
-                        <a href="aboutme.html"> More About Me</a>
-                    </div>
-                    <div class="footer__link--items">
-                        <h2>Social Media</h2>
-                        <a href="https://www.linkedin.com/in/brandon-davis-1b9820285/"> LinkedIn</a>
-                        <a href="https://github.com/Davis013?tab=repositories"> GitHub</a>
-                    </div>
-                </div>
-            </div>
+      <div class="sidebar-section reveal">
+        <h4>Tools & Platforms</h4>
+        <div class="skill-pills">
+          <span class="skill-pill blue">Android Studio</span>
+          <span class="skill-pill blue">SceneBuilder</span>
+          <span class="skill-pill blue">Visual Studio</span>
+          <span class="skill-pill blue">VS Code</span>
+          <span class="skill-pill blue">Git / GitHub</span>
         </div>
+      </div>
 
+      <div class="sidebar-section reveal">
+        <h4>Databases</h4>
+        <div class="skill-pills">
+          <span class="skill-pill neutral">MySQL</span>
+          <span class="skill-pill neutral">SQLite</span>
+          <span class="skill-pill neutral">SQL</span>
+        </div>
+      </div>
 
-<script src="app.js"></script>
+      <div class="sidebar-section reveal">
+        <h4>Concepts</h4>
+        <div class="skill-pills">
+          <span class="skill-pill neutral">OOP</span>
+          <span class="skill-pill neutral">REST APIs</span>
+          <span class="skill-pill neutral">MVC</span>
+          <span class="skill-pill neutral">CRUD</span>
+          <span class="skill-pill neutral">Authentication</span>
+          <span class="skill-pill neutral">Localization</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="contact-section">
+    <div class="section-header reveal">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Contact</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="contact-methods reveal">
+      <div class="contact-row">
+        <div class="contact-row-left">
+          <span class="contact-row-label">Email</span>
+          <span class="contact-row-value">brandondavis013@gmail.com</span>
+        </div>
+        <a href="mailto:brandondavis013@gmail.com?subject=Portfolio Inquiry&body=Hello,%0D%0A%0D%0AI'm getting in touch after visiting your portfolio.">Send →</a>
+      </div>
+      <div class="contact-row">
+        <div class="contact-row-left">
+          <span class="contact-row-label">LinkedIn</span>
+          <span class="contact-row-value">brandon-davis-1b9820285</span>
+        </div>
+        <a href="https://www.linkedin.com/in/brandon-davis-1b9820285/" target="_blank">Connect →</a>
+      </div>
+      <div class="contact-row">
+        <div class="contact-row-left">
+          <span class="contact-row-label">GitHub</span>
+          <span class="contact-row-value">Davis013</span>
+        </div>
+        <a href="https://github.com/Davis013?tab=repositories" target="_blank">View →</a>
+      </div>
+      <div class="contact-row">
+        <div class="contact-row-left">
+          <span class="contact-row-label">LinkedIn DM</span>
+          <span class="contact-row-value">Direct Message</span>
+        </div>
+        <a href="https://www.linkedin.com/messaging/thread/new?recipient=brandondavis1b9820285&topic=Portfolio%20Inquiry" target="_blank">Message →</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>© 2025 Brandon Davis</span>
+    <a href="index.html" style="color:var(--accent); text-decoration:none; font-size:0.7rem;">← Back to Portfolio</a>
+  </footer>
+
+  <script>
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    revealEls.forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>

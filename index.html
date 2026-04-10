@@ -1,139 +1,537 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, intial-scale=1.0">
-    <title>My Online Portfolio</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Brandon Davis — Software Developer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0a0c0f;
+      --surface:  #111418;
+      --border:   #1e2328;
+      --accent:   #00d4aa;
+      --accent2:  #0099ff;
+      --text:     #e8eaed;
+      --muted:    #6b7280;
+      --font-head: 'Syne', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.35;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 3rem;
+      background: rgba(10,12,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 3rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,170,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,170,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: -200px; right: -200px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(0,212,170,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.2s forwards;
+    }
+    .hero-eyebrow::before {
+      content: '// ';
+      opacity: 0.5;
+    }
+
+    .hero h1 {
+      font-family: var(--font-head);
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 800;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.35s forwards;
+    }
+    .hero h1 .accent { color: var(--accent); }
+    .hero h1 .dim { color: var(--muted); }
+
+    .hero-sub {
+      max-width: 520px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.5s forwards;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.65s forwards;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.75rem;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      font-weight: 500;
+      border: 1px solid var(--accent);
+    }
+    .btn-primary:hover { background: transparent; color: var(--accent); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── SKILLS BAR ── */
+    .skills-bar {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 3rem;
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+      overflow-x: auto;
+      background: var(--surface);
+    }
+    .skills-bar-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .skills-list {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .skill-tag {
+      font-size: 0.72rem;
+      color: var(--accent);
+      background: rgba(0,212,170,0.08);
+      border: 1px solid rgba(0,212,170,0.2);
+      padding: 0.3rem 0.75rem;
+      border-radius: 2px;
+      white-space: nowrap;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── SECTION ── */
+    section {
+      padding: 6rem 3rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+    .section-num {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+    }
+    .section-title {
+      font-family: var(--font-head);
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── PROJECTS ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.5px;
+      background: var(--border);
+      border: 1.5px solid var(--border);
+    }
+
+    .project-card {
+      background: var(--surface);
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.2s;
+    }
+    .project-card:hover { background: #161b21; }
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    .project-card:hover::before { transform: scaleX(1); }
+
+    .project-lang {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .project-title {
+      font-family: var(--font-head);
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+    .project-desc {
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.75;
+      margin-bottom: 1.5rem;
+    }
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-decoration: none;
+      transition: gap 0.2s;
+    }
+    .project-link:hover { gap: 0.7rem; }
+    .project-link::after { content: '→'; }
+
+    /* ── CONTACT ── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5px;
+      background: var(--border);
+      border: 1.5px solid var(--border);
+    }
+    .contact-card {
+      background: var(--surface);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .contact-card-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .contact-card-value {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .contact-card a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.8rem;
+      transition: opacity 0.2s;
+    }
+    .contact-card a:hover { opacity: 0.7; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .hero { padding: 7rem 1.5rem 3rem; }
+      section { padding: 4rem 1.5rem; }
+      .skills-bar { padding: 1rem 1.5rem; }
+      .contact-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    }
+  </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar__container">
-            <a href="/" id="navbar__logo"> <i class="fas fa-house"></i>
-            Portfolio</a>
-            <div class="navbar__toggle" id="mobile-menu">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
-            <ul class="navbar__menu">
-                <li class="navbar__item">
-                    <a href="home.html" class="navbar__links">
-                        Home
-                    </a>
-                </li>
-                <li class="navbar__item">
-                    <a href="aboutme.html" class="navbar__links">
-                        About Me
-                    </a>
-                </li>
-                <li class="navbar__item">
-                    <a href="Frontend.html" class="navbar__links">
-                        Frontend Design
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </nav>
 
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="index.html">BD<span>.</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="aboutme.html">About</a></li>
+      <li><a href="Frontend.html">Design</a></li>
+    </ul>
+  </nav>
 
-    <!--Home Text Section-->
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-glow"></div>
+    <p class="hero-eyebrow">Software Developer — Midwest</p>
+    <h1>
+      Brandon<br>
+      <span class="accent">Davis</span><span class="dim">.</span>
+    </h1>
+    <p class="hero-sub">
+      CS graduate building robust applications across mobile, desktop, and the web.
+      Experienced in Java, Python, C++, and MySQL — with a focus on clean architecture and real-world impact.
+    </p>
+    <div class="hero-ctas">
+      <a href="#projects" class="btn btn-primary">View Projects</a>
+      <a href="aboutme.html" class="btn btn-ghost">About Me</a>
+      <a href="https://github.com/Davis013?tab=repositories" target="_blank" class="btn btn-ghost">GitHub</a>
+    </div>
+  </section>
 
-    <div class="main">
-        <div class="main__container">
-            <div class="main__content">
-                <h1>HELLO!</h1>
-                <h2></h2>
-                <p>My name is Brandon Davis, a Software Developer out of the Midwest. The purpose of this website is to showcase my skills as a developer, as well as all my projects</p>
-                <button class="main__btn"><a href="aboutme.html">Get To Know About Me</a></button>
-            </div>
-            <div class="main__img--container">
-                <img src="images/pic2.svg" alt="pic" id="main__img">
-            </div>
-        </div>
+  <!-- SKILLS BAR -->
+  <div class="skills-bar">
+    <span class="skills-bar-label">Tech Stack</span>
+    <div class="skills-list">
+      <span class="skill-tag">Java</span>
+      <span class="skill-tag">Python</span>
+      <span class="skill-tag">C++</span>
+      <span class="skill-tag">MySQL</span>
+      <span class="skill-tag">Android Studio</span>
+      <span class="skill-tag">SceneBuilder</span>
+      <span class="skill-tag">HTML/CSS/JS</span>
+      <span class="skill-tag">Git</span>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-header reveal">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Projects</h2>
+      <div class="section-line"></div>
     </div>
 
+    <div class="projects-grid">
 
-        <!-- Projects Section-->
-        <div class="projects">
-            <h1>Here are some of my personal projects:</h1>
-            <div class="project__container">
-                <div class="project__content">
-                    <h2>Student Term Tracker</h2>
-                    <p>
-                        Technical Specs: This application was designed using Android Studio, using Java as the programming language <br>
-                    <br> Purpose of the Project: The purpose of the project was to design a mobile application for the Android platform that
-                     would allow the user to access the application (Student Term Tracker) and keep track of their current term information such
-                      as (Term name, classes in term, and information for the classes I.E tests, papers, tasks.) The application also allows the 
-                      user to add new term information to the application, as well as classes and the required course curriculum information. There 
-                      is a validation check in place to ensure that the user cannot delete any terms that have courses assigned to them. The application 
-                      allows for notifications to come through when the application is closed, alerting the user that a course or specific task has begun 
-                      or end depending on the start or end date of the course or task. To enable notifications for the courses or tasks the option notify 
-                      course or notify task must be selected on the Add/Edit Course Information or Add/Edit Assessment Information. If the option has not 
-                      been selected then the user will not recieve notifications to their device.
-                    </p>
-                    <button class="project__btn"><a href="https://github.com/Davis013/C196-Mobile-Development">Link to Project</a></button>
-                </div>
-                
-                <div class="project__content">
-                    <h2>Appointment Scheduler Manager</h2>
-                    <p>Technical Specs: This project uses Java as the Programming language, SceneBuilder for the GUI elements, and MySQL for database storage. <br>
-                    <br>Purpose of the project: The purpose of the project was to create an appointment scheduler application that will allow the user to add
-                     customer to the database, edit their information, or delete them from the database as well as add new appointments to the database, edit 
-                     exisiting appointments in the database, or delete appointments entirely. This application can also generate reports based off specific queries
-                      in the code, in the application there are currently 4 but can be changed to include more depending on the need. The 4 different reports that 
-                      can be generated are the Total by Month, Total by Type, Contact Schedule, and Appointment by Country. This application is also protected by 
-                      username and password protection, if the user does not enter the correct password or username they will not be able to access the application. 
-                      (Username and Passwords are in the SQL database in a table listed Users) The application also includes a login activity log that displays the 
-                      login attempts, the dates they were attempted, the time zone, time and whether the attempt was a fail or not. This application also allows for 
-                      the login screen of the application to be displayed in a different language based on the preferred language on the users computer (The current 
-                      langauges accepted are English and French)</p>
-                    <button class="project__btn"><a href="https://github.com/Davis013/C195">Link to Project</a></button>
-                </div>
-                
-                <div class="project__content">
-                    <h2>Class Roster</h2>
-                    <p>Technical Specs: The code was orignally written in Visual Studio, using C++ programming language. <br> 
-                    <br>Purpose of project: The purpose of this project was to create a student roster that display all students in class, 
-                        the amount of days the students were in class as well as the averages for the last three classes they've taken, and their
-                         degree programs. validation to ensure that the data that is being display is valid, such as invalid email addresses. 
-                         This also displays all users with the same degree program.</p> 
-                    <button class="project__btn"><a href="https://github.com/Davis013/Scripting-and-Progamming-Applications">Link to Project</a></button>
-                </div>
+      <div class="project-card reveal">
+        <div class="project-lang">Java · Android Studio · SQLite</div>
+        <h3 class="project-title">Student Term Tracker</h3>
+        <p class="project-desc">
+          Android mobile app for tracking academic terms, courses, and assessments.
+          Features push notifications for start/end dates, validation logic preventing
+          deletion of active terms, and full CRUD functionality for course curriculum data.
+        </p>
+        <a href="https://github.com/Davis013/C196-Mobile-Development" target="_blank" class="project-link">View on GitHub</a>
+      </div>
 
+      <div class="project-card reveal">
+        <div class="project-lang">Java · SceneBuilder · MySQL</div>
+        <h3 class="project-title">Appointment Scheduler</h3>
+        <p class="project-desc">
+          Full-stack desktop scheduling system with customer/appointment CRUD, 4 dynamic
+          SQL-driven reports, login authentication with activity logging, and multilingual
+          support (English &amp; French) via system locale detection.
+        </p>
+        <a href="https://github.com/Davis013/C195" target="_blank" class="project-link">View on GitHub</a>
+      </div>
 
-                <div class="project__content">
-                    <h2>Automated Weather Text</h2>
-                    <p>
-                        Technical Specs: This application was designed using VS Code, using Python as the programming language <br>
-                    <br> Purpose of the Project: The purpose of the project was to create a way to have automated texts sent to a users
-                    phone with the relevant weather information for a specific city using its latitude and longitude.
-                    </p> <br> <br><br> 
-                    <button class="project__btn"><a href="https://github.com/Davis013/Weathertext">Link to Project</a></button>
-                </div>
-            </div>
-        </div>
+      <div class="project-card reveal">
+        <div class="project-lang">C++ · Visual Studio</div>
+        <h3 class="project-title">Class Roster System</h3>
+        <p class="project-desc">
+          Command-line student roster application with email validation, degree program
+          filtering, attendance tracking, and calculated grade averages across the last
+          three completed courses per student.
+        </p>
+        <a href="https://github.com/Davis013/Scripting-and-Progamming-Applications" target="_blank" class="project-link">View on GitHub</a>
+      </div>
 
+      <div class="project-card reveal">
+        <div class="project-lang">Python · REST API · SMS</div>
+        <h3 class="project-title">Automated Weather Text</h3>
+        <p class="project-desc">
+          Python automation tool that fetches weather data via latitude/longitude coordinates
+          and delivers scheduled SMS alerts to a user's phone — no manual lookups required.
+        </p>
+        <a href="https://github.com/Davis013/Weathertext" target="_blank" class="project-link">View on GitHub</a>
+      </div>
 
+    </div>
+  </section>
 
-    <!--Footer Section-->
-        <div class="footer__container">
-            <div class="footer__links">
-                <div class="footer__link--wrapper">
-                    <div class="footer__link--items">
-                        <h2>About Me</h2>
-                        <a href="aboutme.html"> More About Me</a>
-                    </div>
-                    <div class="footer__link--items">
-                        <h2>Social Media</h2>
-                        <a href="https://www.linkedin.com/in/brandon-davis-1b9820285/"> LinkedIn</a>
-                        <a href="https://github.com/Davis013?tab=repositories"> GitHub</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <!-- CONTACT -->
+  <section id="contact" style="padding-top:0;">
+    <div class="section-header reveal">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Get In Touch</h2>
+      <div class="section-line"></div>
+    </div>
 
+    <div class="contact-grid reveal">
+      <div class="contact-card">
+        <span class="contact-card-label">Email</span>
+        <span class="contact-card-value">brandondavis013@gmail.com</span>
+        <a href="mailto:brandondavis013@gmail.com?subject=Portfolio Inquiry&body=Hello,%0D%0A%0D%0AI'm getting in touch after visiting your portfolio.">Send a message →</a>
+      </div>
+      <div class="contact-card">
+        <span class="contact-card-label">LinkedIn</span>
+        <span class="contact-card-value">Brandon Davis</span>
+        <a href="https://www.linkedin.com/in/brandon-davis-1b9820285/" target="_blank">View profile →</a>
+      </div>
+      <div class="contact-card">
+        <span class="contact-card-label">GitHub</span>
+        <span class="contact-card-value">Davis013</span>
+        <a href="https://github.com/Davis013?tab=repositories" target="_blank">View repositories →</a>
+      </div>
+      <div class="contact-card">
+        <span class="contact-card-label">Location</span>
+        <span class="contact-card-value">Midwest, USA</span>
+        <a href="aboutme.html">More about me →</a>
+      </div>
+    </div>
+  </section>
 
-<script src="app.js"></script>
+  <!-- FOOTER -->
+  <footer>
+    <span>© 2025 Brandon Davis</span>
+    <span>Built with HTML · CSS · JS</span>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    revealEls.forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>
